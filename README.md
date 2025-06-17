@@ -2,6 +2,8 @@
 
 A custom Dockerfile for n8n that includes FFmpeg support (other packages can also be added!)
 
+This was tested with the n8n with workers template https://railway.com/deploy/r2SNX_
+
 ## Quick Start
 
 1. Go to your n8n worker service settings tab and disconnect the DockerHub image

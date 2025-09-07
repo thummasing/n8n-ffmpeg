@@ -1,26 +1,21 @@
 FROM n8nio/n8n:latest
 
 USER root
-# ติดตั้ง FFmpeg + Chromium + lib ที่จำเป็น
+# libs + chromium
 RUN apk update && apk add --no-cache \
-  ffmpeg \
-  chromium \
-  nss \
-  harfbuzz \
-  freetype \
-  ttf-freefont \
-  ca-certificates
+  chromium ffmpeg nss harfbuzz freetype ttf-freefont ca-certificates
 
-# ชี้ให้ Puppeteer ข้ามการดาวน์โหลด และใช้ Chromium ที่ติดตั้งในระบบ
+# ให้ puppeteer ข้ามการโหลด browser และชี้ไป chromium ในระบบ
 ENV PUPPETEER_SKIP_DOWNLOAD=1
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# อนุญาต Code node require โมดูลพวกนี้
+ENV NODE_FUNCTION_ALLOW_EXTERNAL=puppeteer,puppeteer-extra,puppeteer-extra-plugin-stealth
 
-# อนุญาต Code node ให้ require โมดูล external
-ENV NODE_FUNCTION_ALLOW_EXTERNAL=puppeteer
+# ติดตั้ง global ด้วยสิทธิ์ root (จะไม่เจอ EACCES)
+RUN npm i -g --unsafe-perm puppeteer puppeteer-extra puppeteer-extra-plugin-stealth \
+ && chown -R node:node /usr/local/lib/node_modules /usr/local/bin
+
+# (ให้ Code node มองเห็น global modules เสมอ)
+ENV NODE_PATH=/usr/local/lib/node_modules
 
 USER node
-# ติดตั้ง puppeteer เป็น global
-RUN npm install -g puppeteer
-
-# (ถ้า Code node หา global module ไม่เจอ ให้เปิดใช้บรรทัดนี้)
-# ENV NODE_PATH=/usr/local/lib/node_modules

@@ -1,5 +1,8 @@
 FROM n8nio/n8n:latest
 
+# override entrypoint ให้ shell รันคำสั่งเอง
+CMD ["sh", "-c", "n8n migrate:up && n8n start"]
+
 # --- Root ---
 USER root
 
